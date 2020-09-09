@@ -88,7 +88,8 @@ function sumWeights(sheet) {
 }
 
 const validateXlsWeights = (hook) => {
-  if (sumWeights(loadSheet(hook.data.uri)) == 100) {
+  const sum = sumWeights(loadSheet(hook.data.uri))
+  if (sum == 100) {
     console.log("The underlying weights sums to 100%")
   } else {
     console.log(`The underlying weights doesn't sum to 100%. The weights sum is ${sum}`)
