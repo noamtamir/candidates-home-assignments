@@ -67,7 +67,8 @@ function loadSheet(uri) {
   return sheet
 }
 
-function sumsAddsTo100Percent(sheet) {
+
+function sumWeights(sheet) {
   let cellIds = []
   for (i = 38; i <= 42; i++) {
       cellIds.push(`F${i}`)
@@ -81,25 +82,17 @@ function sumsAddsTo100Percent(sheet) {
       sum += cell[1]['v']
   }
 
-  // round float to 4 decimal pionts.
-  sum = Number.parseFloat(sum.toFixed(4))
-
-  // assert sum == 1.0
-  if (sum == 1) {
-      return true
-  } else {
-      return false
-  }
-
+  // round float to 2 decimal pionts.
+  sum = Number.parseFloat((sum*100).toFixed(2))
+  return sum
 }
 
 const validateXlsWeights = (hook) => {
-  if (sumsAddsTo100Percent(loadSheet(hook.data.uri))) {
+  if (sumWeights(loadSheet(hook.data.uri)) == 100) {
     console.log("The underlying weights sums to 100%")
   } else {
-    console.log(`The underlying weights doesn't sum to 100%. The weights sum is {weightsSum}`)
+    console.log(`The underlying weights doesn't sum to 100%. The weights sum is ${sum}`)
   }
-  // console.log(hook);
 };
 
 app.service("/uploads").before({
