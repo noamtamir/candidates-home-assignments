@@ -14,6 +14,9 @@ const blobService = require("feathers-blob");
 const fs = require("fs-blob-store");
 const blobStorage = fs(__dirname + "/uploads");
 
+const XLSX = require('xlsx')
+
+
 // Feathers app
 const app = feathers();
 
@@ -57,8 +60,46 @@ const handleUpload = (hook) => {
   }
 };
 
+function loadSheet(uri) {
+  buf = dauria.parseDataURI(uri).buffer
+  const workbook = XLSX.read(buf, {type:'buffer'})
+  const sheet = workbook.Sheets[workbook.SheetNames[0]]
+  return sheet
+}
+
+function sumsAddsTo100Percent(sheet) {
+  let cellIds = []
+  for (i = 38; i <= 42; i++) {
+      cellIds.push(`F${i}`)
+  }
+
+  const cells = Object.entries(sheet).filter(x=>cellIds.includes(x[0]))
+
+  // add cell values
+  let sum = 0
+  for (let cell of cells) {
+      sum += cell[1]['v']
+  }
+
+  // round float to 4 decimal pionts.
+  sum = Number.parseFloat(sum.toFixed(4))
+
+  // assert sum == 1.0
+  if (sum == 1) {
+      return true
+  } else {
+      return false
+  }
+
+}
+
 const validateXlsWeights = (hook) => {
-  console.log("implement me");
+  if (sumsAddsTo100Percent(loadSheet(hook.data.uri))) {
+    console.log("The underlying weights sums to 100%")
+  } else {
+    console.log(`The underlying weights doesn't sum to 100%. The weights sum is {weightsSum}`)
+  }
+  // console.log(hook);
 };
 
 app.service("/uploads").before({
