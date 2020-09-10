@@ -1,6 +1,6 @@
 <template lang="pug">
 section.section
-  .columns.is-mobile
+  .columns
     card(title='BTC/USD')
     card(title='ETH/USD')
     card(title='XRP/USD')

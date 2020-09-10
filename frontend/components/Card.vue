@@ -6,17 +6,11 @@
       </header>
       <div class="card-content">
         <div class="content has-text-centered">
-          <b-icon :icon="icon" size="is-large" type="is-primary" />
+          <client-only placeholder="Loading...">
+            <highchart :options="chartOptions" />
+          </client-only>
         </div>
       </div>
-      <footer class="card-footer">
-        <div class="card-footer-item">
-          <span>
-            {{ data }}
-            <slot />
-          </span>
-        </div>
-      </footer>
     </div>
   </div>
 </template>
@@ -28,24 +22,51 @@ export default {
       type: String,
       required: true,
     },
-    icon: {
-      type: String,
-      required: true,
-      default: 'chart-line',
-    },
   },
   data() {
-    return { data: 'Loading...' }
+    return {
+      chartOptions: {
+        title: {
+          text: undefined,
+        },
+        yAxis: {
+          title: {
+            text: 'USD',
+          },
+        },
+
+        xAxis: {
+          type: 'datetime',
+          title: {
+            text: 'Date',
+          },
+        },
+
+        legend: {
+          enabled: false,
+        },
+
+        series: [
+          {
+            name: this.title,
+            data: [],
+          },
+        ],
+        credits: {
+          enabled: false,
+        },
+      },
+    }
   },
   async created() {
+    const now = Date.now()
     const [fsym, tsym] = this.$props.title.split('/')
     const response = await this.$axios.$get(
-      `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${fsym}&tsym=${tsym}&toTs=1598832000&limit=30`
+      `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${fsym}&tsym=${tsym}&toTs=${now}&limit=30`
     )
-    const data = response.Data.Data.map((x) => {
-      return { time: x.time, value: x.close }
+    this.chartOptions.series[0].data = response.Data.Data.map((x) => {
+      return [x.time * 1000, x.close]
     })
-    this.data = data
   },
 }
 </script>

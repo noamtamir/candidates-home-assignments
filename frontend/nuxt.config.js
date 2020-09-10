@@ -56,6 +56,7 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    'nuxt-highcharts',
   ],
   /*
    ** Axios module configuration
@@ -67,4 +68,5 @@ export default {
    ** See https://nuxtjs.org/api/configuration-build/
    */
   build: {},
+  highcharts: {},
 }
