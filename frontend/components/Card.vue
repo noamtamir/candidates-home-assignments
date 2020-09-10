@@ -12,6 +12,7 @@
       <footer class="card-footer">
         <div class="card-footer-item">
           <span>
+            {{ data }}
             <slot />
           </span>
         </div>
@@ -32,6 +33,19 @@ export default {
       required: true,
       default: 'chart-line',
     },
+  },
+  data() {
+    return { data: 'Loading...' }
+  },
+  async created() {
+    const [fsym, tsym] = this.$props.title.split('/')
+    const response = await this.$axios.$get(
+      `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${fsym}&tsym=${tsym}&toTs=1598832000&limit=30`
+    )
+    const data = response.Data.Data.map((x) => {
+      return { time: x.time, value: x.close }
+    })
+    this.data = data
   },
 }
 </script>
